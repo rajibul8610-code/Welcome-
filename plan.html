@@ -1,0 +1,163 @@
+income-site/
+│
+├── index.html           → হোম / প্লান লিস্ট
+├── dashboard.html       → ইউজারের ড্যাশবোর্ড
+├── plan.html            → Plan Buy + Payment Number
+├── withdraw.html        → প্রত্যাহার ফর্ম
+├── bank.html            → ব্যাংক / বিকাশ / নগদ / রকেট তথ্য
+├── share.html           → রেফার / শেয়ার
+├── records.html         → Payment History
+├── about.html           → আমাদের সম্পর্কে
+├── support.html         → Customer Support
+├── group.html           → Official Group
+├── logout.html          → লগ আউট
+│
+├── admin/
+│   ├── login.html       → Admin লগইন
+│   └── admin_payments.html → Pending Payments
+│
+├── assets/
+│   ├── css/style.css    → স্টাইল
+│   ├── js/script.js     → ম্যানুয়াল লজিক / Alert / LocalStorage
+│   └── img/             → লোগো / ছবি
+│
+└── partials/
+    └── menu.html        → Sidebar Menu
+    <div class="menu">
+  <a href="dashboard.html">🏠 হোম</a>
+  <a href="withdraw.html">💸 প্রত্যাহার</a>
+  <a href="bank.html">🏦 ব্যাংক তথ্য</a>
+  <a href="plan.html">প্লান কিনুন</a>
+  <a href="share.html">🔗 শেয়ার</a>
+  <a href="records.html">📊 রেকর্ডস</a>
+  <a href="about.html">ℹ️ আমাদের সম্পর্কে</a>
+  <a href="support.html">🎧 Customer Support</a>
+  <a href="group.html">👥 Official Group</a>
+  <a href="logout.html">🚪 লগ আউট</a>
+    </div>
+    body{
+  font-family: Arial;
+  background:#0f172a;
+  color:white;
+  padding:20px;
+}
+
+.menu a{
+  display:block;
+  padding:10px;
+  background:#111827;
+  margin:5px;
+  color:white;
+  text-decoration:none;
+  border-radius:8px;
+}
+
+.menu a:hover{
+  background:#1f2933;
+}
+
+.card{
+  background:#111827;
+  padding:15px;
+  margin:10px;
+  border-radius:10px;
+}
+
+input, select, button{
+  padding:10px;
+  margin:5px 0;
+  border-radius:8px;
+}
+
+button{
+  cursor:pointer;
+  background:#38bdf8;
+  border:none;
+  color:white;
+}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>প্লান কিনুন</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div>
+  <!-- Include menu.html manually -->
+  <iframe src="partials/menu.html" style="border:none;width:200px;height:400px;"></iframe>
+</div>
+
+<h2>প্লান কিনুন</h2>
+
+<div class="pay-box">
+  <p>বিকাশ: <b id="bkash-number">01618599077</b></p>
+  <p>নগদ: <b id="nagad-number">01624228476</b></p>
+  <p>রকেট: <b id="rocket-number">01624228476</b></p>
+</div>
+
+<form id="payment-form">
+  <select id="method" required>
+    <option value="">পেমেন্ট মেথড নির্বাচন করুন</option>
+    <option value="bkash">বিকাশ</option>
+    <option value="nagad">নগদ</option>
+    <option value="rocket">রকেট</option>
+  </select>
+  <input type="text" id="trxid" placeholder="Transaction ID" required>
+  <input type="number" id="amount" placeholder="Amount" required>
+  <button type="submit">Submit</button>
+</form>
+
+<script src="assets/js/script.js"></script>
+
+</body>
+    </html>
+    document.getElementById('payment-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var method = document.getElementById('method').value;
+  var trx = document.getElementById('trxid').value;
+  var amount = document.getElementById('amount').value;
+
+  if(method && trx && amount){
+    alert("আপনি "+method+" দিয়ে "+amount+" টাকা পাঠানোর চেষ্টা করেছেন.\nTransaction ID: "+trx+"\nAdmin Approve করার পরে প্লান এক্টিভ হবে।");
+    // Optional: Save locally
+    let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+    payments.push({method,trx,amount,status:'pending',date:new Date().toLocaleString()});
+    localStorage.setItem('payments', JSON.stringify(payments));
+    document.getElementById('payment-form').reset();
+  }
+});
+<!DOCTYPE html>
+<html>
+<head>
+  <title>রেকর্ডস</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<iframe src="partials/menu.html" style="border:none;width:200px;height:400px;"></iframe>
+
+<h2>পেমেন্ট রেকর্ডস</h2>
+<table border="1" cellpadding="10">
+<tr><th>Method</th><th>Amount</th><th>TRX ID</th><th>Status</th><th>Date</th></tr>
+<tbody id="records-body"></tbody>
+</table>
+
+<script>
+let records = JSON.parse(localStorage.getItem('payments') || '[]');
+let tbody = document.getElementById('records-body');
+records.forEach(r=>{
+  tbody.innerHTML += `<tr>
+    <td>${r.method}</td>
+    <td>${r.amount}</td>
+    <td>${r.trx}</td>
+    <td>${r.status}</td>
+    <td>${r.date}</td>
+  </tr>`;
+});
+</script>
+
+</body>
+</html>
